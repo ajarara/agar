@@ -1,25 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useRef } from 'react';
+import { Scene, PerspectiveCamera, WebGLRenderer } from 'three';
 
-function App() {
+const animationLoop = () => {
+  
+}
+
+const App: React.FC = () => {
+  const scene = useRef(new Scene());
+  const camera = useRef(new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000));
+  const renderer = useRef(new WebGLRenderer());
+  renderer.current!.setSize( window.innerWidth, window.innerHeight);
+
+  useEffect(() => {
+    const element = document.getElementById('__canvas');
+    element?.parentNode?.replaceChild(renderer.current!.domElement, element!);
+    const animate = () => {
+      requestAnimationFrame(animate);
+      animationLoop();
+      renderer.current!.render(scene.current!, camera.current!);
+    }
+    animate();
+  }, []);
+  
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <div id={'__canvas'}/>
   );
 }
 
