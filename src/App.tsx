@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback} from 'react';
 import { Scene, PerspectiveCamera, WebGLRenderer, CircleGeometry, MeshBasicMaterial, Mesh } from 'three';
 
 const setup = (scene: Scene, camera: PerspectiveCamera) => {
@@ -12,10 +12,26 @@ const setup = (scene: Scene, camera: PerspectiveCamera) => {
 
   return { ball };
 }
+// hook
+const useMousePosition = () => {
+  const [mousePosition, setMousePosition] = useState<MouseCoords | undefined>(undefined);
+  const updatePosition = useCallback((e: any) => setMousePosition({x: e.screenX, y:e.screenY}),[])
+  useEffect(() => {
+    document.addEventListener("mousemove",updatePosition)
+    return ()=> document.removeEventListener("mousemove",updatePosition)
+  },[updatePosition])
+  return mousePosition;
+}
+
+type MouseCoords = {
+  x: number,
+  y:number,
+}
 
 const animationLoop = (ball: Mesh) => {
   ball.position.x += 0.01;
 }
+
 
 type SceneState = {
   scene: Scene,
@@ -25,7 +41,7 @@ type SceneState = {
 
 const App: React.FC = () => {
   const [sceneState, setSceneState] = useState<SceneState | undefined>(undefined);
-
+  const mousePosition = useMousePosition();
   useEffect(() => {
     console.log("Scene state creation");
     const scene = new Scene();
@@ -48,14 +64,14 @@ const App: React.FC = () => {
     console.log("Scene state set!");
     const { scene, camera, renderer } = sceneState;
     const { ball } = setup(scene, camera);
-    
+   
     let animate = () => {
       requestAnimationFrame(animate);
-      animationLoop(ball);
+      animationLoop(ball, mousePosition);
       renderer.render(scene, camera);
     }
     animate();
-  }, [sceneState]);
+  }, [sceneState, mousePosition]);
   
   return (
     <>
