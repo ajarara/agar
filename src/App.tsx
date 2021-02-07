@@ -29,7 +29,7 @@ type MouseCoords = {
 }
 
 const animationLoop = (ball: Mesh) => {
-  ball.position.x += 0.01;
+
 }
 
 
@@ -67,7 +67,7 @@ const App: React.FC = () => {
    
     let animate = () => {
       requestAnimationFrame(animate);
-      animationLoop(ball, mousePosition);
+      animationLoop(ball, );
       renderer.render(scene, camera);
     }
     animate();
